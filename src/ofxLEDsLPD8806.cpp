@@ -40,7 +40,7 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs)
     << "{"
     << "  vec4 originalColor    = texture2DRect(tex0, TexCoord);"
     // When cast as char, this is 0x80 | (c>>1)
-    << "  vec4 lpd8806Color     = originalColor*0.5 + 0.5;"
+    << "  vec4 lpd8806Color     = originalColor*0.5 + 0.5+0.004;"
     << "  gl_FragColor          = lpd8806Color.grba;"
     << "}";
     lpd8806EncodingShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragmentShaderSource.str());
