@@ -28,7 +28,7 @@ public:
   virtual void encode()=0;
   virtual void clear(const ofColor& c);
 
-  void draw();
+  void draw(float ptSize = 40.0);
   void addLED(const size_t& ledIdx, const ofVec3f& ledPosition);
 
   size_t numLEDs;

@@ -36,9 +36,9 @@ ofxLEDsImplementation::clear(const ofColor& c)
 
 //--------------------------------------------------------------
 void
-ofxLEDsImplementation::draw()
+ofxLEDsImplementation::draw(float ptSize)
 {
-  glPointSize(40.);
+  glPointSize(ptSize);
   renderBuffer.getTextureReference().bind();
   {
     mappingMesh.drawVertices();
