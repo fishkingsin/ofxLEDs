@@ -22,39 +22,39 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs)
 #ifdef TARGET_OPENGLES
 		std::stringstream vertexShaderSource;
 		vertexShaderSource
-		<< "attribute vec4 position;"
-		<< "attribute vec4 color;"
-		<< "attribute vec4 normal;"
-		<< "attribute vec2 texcoord;"
-		<< "uniform mat4 modelViewMatrix;"
-		<< "uniform mat4 projectionMatrix;"
-		<< "uniform sampler2D maskTex;"
-		<< "varying vec4 colorVarying;"
-		<< "varying vec2 texCoordVarying;"
-		<< "void main()"
-		<< "{"
-		<< "//get our current vertex position so we can modify it"
-		<< "	vec4 pos = projectionMatrix * modelViewMatrix * position;"
-		<< "	gl_Position = pos;"
-		<< "	colorVarying = color;"
-		<< "	texCoordVarying = texcoord;"
-		<< "}";
+		<< "attribute vec4 position;\n"
+		<< "attribute vec4 color;\n"
+		<< "attribute vec4 normal;\n"
+		<< "attribute vec2 texcoord;\n"
+		<< "uniform mat4 modelViewMatrix;\n"
+		<< "uniform mat4 projectionMatrix;\n"
+		<< "uniform sampler2D maskTex;\n"
+		<< "varying vec4 colorVarying;\n"
+		<< "varying vec2 texCoordVarying;\n"
+		<< "void main()\n"
+		<< "{\n"
+		<< "//get our current vertex position so we can modify it\n"
+		<< "	vec4 pos = projectionMatrix * modelViewMatrix * position;\n"
+		<< "	gl_Position = pos;\n"
+		<< "	colorVarying = color;\n"
+		<< "	texCoordVarying = texcoord;\n"
+		<< "}\n";
 		ofLogVerbose("ofxLEDsLPD8806")<< vertexShaderSource.str();
 		lpd8806EncodingShader.setupShaderFromSource(GL_VERTEX_SHADER, vertexShaderSource.str());
 		
 		std::stringstream fragmentShaderSource;
 		fragmentShaderSource
-		<< "uniform sampler2D tex0;"
-		<< "uniform vec4 color;"
+		<< "uniform sampler2D tex0;\n"
+		<< "uniform vec4 color;\n"
 		
-		<< "varying vec2 texCoordVarying;"
+		<< "varying vec2 texCoordVarying;\n"
 		
-		<< "void main (void)"
-		<< "{"
-		<< "	vec2 pos = texCoordVarying;"
-		<< "	vec3 src = texture2D(tex0, pos).rgb;"
-		<< "	gl_FragColor = vec4( src , 1.0);"
-		<< "}";
+		<< "void main (void)\n"
+		<< "{\n"
+		<< "	vec2 pos = texCoordVarying;\n"
+		<< "	vec3 src = texture2D(tex0, pos).rgb;\n"
+		<< "	gl_FragColor = vec4( src , 1.0);\n"
+		<< "}\n";
 		ofLogVerbose("ofxLEDsLPD8806")<< fragmentShaderSource.str();
 		lpd8806EncodingShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragmentShaderSource.str());
 #else
@@ -78,7 +78,6 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs)
 		<< "void main(void)"
 		<< "{"
 		<< "  vec4 originalColor    = texture2DRect(tex0, TexCoord);"
-		// When cast as char, this is 0x80 | (c>>1)
 		<< "  vec4 lpd8806Color     = originalColor*0.5 + 0.5+0.004;"
 		<< "  gl_FragColor          = lpd8806Color.grba;"
 		<< "}";
