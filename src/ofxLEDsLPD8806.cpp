@@ -125,7 +125,11 @@ ofxLEDsLPD8806::resize(size_t _numLEDs)
 	memset(&txBuffer[PixelsStart], 0x80, (PixelsEnd-PixelsStart));
 	
 	ofFbo::Settings fboConfig;
+#ifdef TARGET_OPENGLES
+	fboConfig.textureTarget = GL_TEXTURE_2D;
+#else
 	fboConfig.textureTarget = GL_TEXTURE_RECTANGLE_ARB;
+#endif
 	fboConfig.width         = stripRect.width;
 	fboConfig.height        = stripRect.height;
 	fboConfig.minFilter     = GL_NEAREST;

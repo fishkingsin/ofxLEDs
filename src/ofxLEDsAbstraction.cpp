@@ -24,7 +24,7 @@ ofxLEDsAbstraction::resize(const ofRectangle& _rect)
 {
   rect = _rect;
   ofFbo::Settings fboConfig;
-#ifndef GL_TEXTURE_RECTANGLE_ARB
+#ifdef TARGET_OPENGLES
 	fboConfig.textureTarget = GL_TEXTURE_2D;
 #else
   fboConfig.textureTarget = GL_TEXTURE_RECTANGLE_ARB;
