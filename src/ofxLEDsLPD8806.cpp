@@ -39,14 +39,11 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs)
 		<< "	colorVarying = color;"
 		<< "	texCoordVarying = texcoord;"
 		<< "}";
+		ofLogVerbose("ofxLEDsLPD8806")<< vertexShaderSource.str();
 		lpd8806EncodingShader.setupShaderFromSource(GL_VERTEX_SHADER, vertexShaderSource.str());
 		
 		std::stringstream fragmentShaderSource;
 		fragmentShaderSource
-		<< "#ifdef GL_ES"
-		<< "// define default precision for float, vec, mat."
-		<< "precision highp float;"
-		<< "#endif"
 		<< "uniform sampler2D tex0;"
 		<< "uniform vec4 color;"
 		
@@ -58,6 +55,7 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs)
 		<< "	vec3 src = texture2D(tex0, pos).rgb;"
 		<< "	gl_FragColor = vec4( src , 1.0);"
 		<< "}";
+		ofLogVerbose("ofxLEDsLPD8806")<< fragmentShaderSource.str();
 		lpd8806EncodingShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragmentShaderSource.str());
 #else
 		std::stringstream vertexShaderSource;
