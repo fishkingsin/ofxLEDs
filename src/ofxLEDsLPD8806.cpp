@@ -48,7 +48,6 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs)
 		<< "precision highp float;"
 		<< "#endif"
 		<< "uniform sampler2D tex0;"
-		<< "uniform sampler2D maskTex;"
 		<< "uniform vec4 color;"
 		
 		<< "varying vec2 texCoordVarying;"
@@ -57,8 +56,7 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs)
 		<< "{"
 		<< "	vec2 pos = texCoordVarying;"
 		<< "	vec3 src = texture2D(tex0, pos).rgb;"
-		<< "	float mask = texture2D(maskTex, pos).r;"
-		<< "	gl_FragColor = vec4( src , mask);"
+		<< "	gl_FragColor = vec4( src , 1.0);"
 		<< "}";
 		lpd8806EncodingShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragmentShaderSource.str());
 #else
