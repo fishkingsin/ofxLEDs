@@ -20,7 +20,7 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs)
 	if (!lpd8806EncodedShaderInitialized)
 	{
 #ifdef TARGET_OPENGLES
-		td::stringstream vertexShaderSource;
+		std::stringstream vertexShaderSource;
 		vertexShaderSource
 		<< "attribute vec4 position;"
 		<< "attribute vec4 color;"
@@ -176,7 +176,7 @@ ofxLEDsLPD8806::encode()
 		glReadPixels(0,
 					 0,
 					 stripRect.width,
-					 dataTexture.height,
+					 stripRect.height,
 					 GL_RGB, GL_UNSIGNED_BYTE,
 					 &txBuffer[PixelsStart]);
 		
