@@ -173,7 +173,7 @@ ofxLEDsLPD8806::setPixels(unsigned char*colors ,int _size)
 	{
 		if(i<_size)
 		{
-			uint8_t pixel[3] = { (colors[i*3+1]>>1) +1,  (colors[i]>>1)+1, (colors[i*3+2]>>1) +1 };
+			uint8_t pixel[3] = { (colors[i*3+1]>>1) | 0x80,  (colors[i*3]>>1)| 0x80, (colors[i*3+2]>>1) | 0x80 };
 			memcpy(&txBuffer[PixelsStart + (3*i)], pixel, 3);
 		}
 	}
