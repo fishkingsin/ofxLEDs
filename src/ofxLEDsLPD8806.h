@@ -24,6 +24,8 @@ public:
   void resize(size_t _numLEDs);
   void clear(const ofColor& c);
   void encode();
+	
+	void setPixels(std::vector<ofColor>colors);
 
   ofMutex txBufferMutex;
   std::vector<uint8_t> txBuffer;
