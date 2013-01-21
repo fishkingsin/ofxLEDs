@@ -26,7 +26,7 @@ public:
   void encode();
 	
 	void setPixels(std::vector<ofColor>colors);
-
+	void setPixels(unsigned char*colors ,int _size);
   ofMutex txBufferMutex;
   std::vector<uint8_t> txBuffer;
 

@@ -137,7 +137,7 @@ ofxLEDsLPD8806::resize(size_t _numLEDs)
 void
 ofxLEDsLPD8806::clear(const ofColor& c)
 {
-	ofxLEDsImplementation::clear(c);
+//	ofxLEDsImplementation::clear(c);
 	
 	uint8_t pixel[3] = { (c.g>>1) | 0x80, (c.r>>1) | 0x80, (c.b>>1) | 0x80 };
 	for (size_t i=0; i<numLEDs; ++i)
@@ -149,7 +149,8 @@ ofxLEDsLPD8806::clear(const ofColor& c)
 void
 ofxLEDsLPD8806::setPixels(std::vector<ofColor>colors)
 {
-	ofxLEDsImplementation::clear(ofColor::black);
+	
+//	ofxLEDsImplementation::clear(ofColor::black);
 	
 	for (size_t i=0; i<numLEDs; ++i)
 	{
@@ -164,15 +165,15 @@ ofxLEDsLPD8806::setPixels(std::vector<ofColor>colors)
 }
 //--------------------------------------------------------------
 void
-ofxLEDsLPD8806::setPixels(unsigned char*color ,int _size)
+ofxLEDsLPD8806::setPixels(unsigned char*colors ,int _size)
 {
-	ofxLEDsImplementation::clear(ofColor::black);
+//	ofxLEDsImplementation::clear(ofColor::black);
 	
 	for (size_t i=0; i<numLEDs; ++i)
 	{
 		if(i<_size)
 		{
-			uint8_t pixel[3] = { (colors[i]>>1) | 0x80, (colors[i*3+1]>>1) | 0x80, (colors[*3+2]>>1) | 0x80 };
+			uint8_t pixel[3] = { (colors[i]>>1) | 0x80, (colors[i*3+1]>>1) | 0x80, (colors[i*3+2]>>1) | 0x80 };
 			memcpy(&txBuffer[PixelsStart + (3*i)], pixel, 3);
 		}
 	}
