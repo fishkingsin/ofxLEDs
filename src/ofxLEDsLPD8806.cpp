@@ -137,7 +137,7 @@ ofxLEDsLPD8806::resize(size_t _numLEDs)
 void
 ofxLEDsLPD8806::clear(const ofColor& c)
 {
-//	ofxLEDsImplementation::clear(c);
+	ofxLEDsImplementation::clear(c);
 	
 	uint8_t pixel[3] = { (c.g>>1) | 0x80, (c.r>>1) | 0x80, (c.b>>1) | 0x80 };
 	for (size_t i=0; i<numLEDs; ++i)
