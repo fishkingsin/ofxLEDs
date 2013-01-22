@@ -151,7 +151,7 @@ ofxLEDsLPD8806::setPixels(std::vector<ofColor>colors)
 {
 	
 //	ofxLEDsImplementation::clear(ofColor::black);
-	
+	ofLogVerbose("ofxLEDsLPD8806")<<"setPixels";
 	for (size_t i=0; i<numLEDs; ++i)
 	{
 		if(i<colors.size())
