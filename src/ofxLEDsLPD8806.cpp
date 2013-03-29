@@ -150,7 +150,7 @@ void
 ofxLEDsLPD8806::setPixels(std::vector<ofColor>colors)
 {
 	
-//	ofxLEDsImplementation::clear(ofColor::black);
+    //	ofxLEDsImplementation::clear(ofColor::black);
 	
 	for (size_t i=0; i<numLEDs; ++i)
 	{
@@ -167,7 +167,7 @@ ofxLEDsLPD8806::setPixels(std::vector<ofColor>colors)
 void
 ofxLEDsLPD8806::setPixels(unsigned char*colors ,int _size)
 {
-//	ofxLEDsImplementation::clear(ofColor::black);
+    //	ofxLEDsImplementation::clear(ofColor::black);
 	
 	for (size_t i=0; i<numLEDs; ++i)
 	{
@@ -197,26 +197,34 @@ ofxLEDsLPD8806::encode()
 	}
 	encodedBuffer.end();
 	
-	ofTexture& dataTexture(encodedBuffer.getTextureReference());
-	dataTexture.bind();
+    
+    
 	{
 #ifndef TARGET_OPENGLES
-		
+        ofTexture& dataTexture(encodedBuffer.getTextureReference());
+        dataTexture.bind();
 		// These pixels are swizzled into a 2nd array for FTDI Write
 		glGetTexImage(dataTexture.getTextureData().textureTarget, 0,
 					  GL_RGB, GL_UNSIGNED_BYTE,
 					  &txBuffer[PixelsStart]);
+        dataTexture.unbind();
 #else
-		glReadPixels(0,
-					 0,
-					 stripRect.width,
-					 stripRect.height,
-					 GL_RGB, GL_UNSIGNED_BYTE,
-					 &txBuffer[PixelsStart]);
-
+        encodedBuffer.bind();
+        int format,type;
+        ofGetGlFormatAndType(encodedBuffer.settings.internalformat,format,type);
+        glReadPixels(0,0,encodedBuffer.settings.width, encodedBuffer.settings.height, format, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
+        encodedBuffer.unbind();
+        
+        //		glReadPixels(0,
+        //					 0,
+        //					 stripRect.width,
+        //					 stripRect.height,
+        //					 GL_RGB, GL_UNSIGNED_BYTE,
+        //					 &txBuffer[PixelsStart]);
+        
 #endif
 	}
-	dataTexture.unbind();
+    
 	
 	needsEncoding = false;
 }
