@@ -210,9 +210,9 @@ ofxLEDsLPD8806::encode()
         dataTexture.unbind();
 #else
         encodedBuffer.bind();
-        int format,type;
-        ofGetGlFormatAndType(encodedBuffer.settings.internalformat,format,type);
-        glReadPixels(0,0,encodedBuffer.settings.width, encodedBuffer.settings.height, format, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
+//        int format,type;
+//        ofGetGlFormatAndType(encodedBuffer.settings.internalformat,format,type);
+        glReadPixels(0,0,encodedBuffer.getWidth(), encodedBuffer.getHeight(), format, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
         encodedBuffer.unbind();
         
         //		glReadPixels(0,
