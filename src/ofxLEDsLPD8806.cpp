@@ -212,7 +212,7 @@ ofxLEDsLPD8806::encode()
         encodedBuffer.bind();
 //        int format,type;
 //        ofGetGlFormatAndType(encodedBuffer.settings.internalformat,format,type);
-        glReadPixels(0,0,encodedBuffer.getWidth(), encodedBuffer.getHeight(), format, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
+        glReadPixels(0,0,encodedBuffer.getWidth(), encodedBuffer.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
         encodedBuffer.unbind();
         
         //		glReadPixels(0,
