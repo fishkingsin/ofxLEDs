@@ -33,7 +33,7 @@ public:
 	std::vector<uint8_t> txPixels;
 	
 	//p9813
-	uint8_t makeFlag (uint8_t red, uint8_t green, uint8_t blue);
+//	uint8_t makeFlag (uint8_t red, uint8_t green, uint8_t blue);
 	
 private:
 	size_t DataStart;

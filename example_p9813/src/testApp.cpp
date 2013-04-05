@@ -29,7 +29,7 @@ void testApp::update(){
 	
 	for(int i = 0 ; i < 1; i++)
 	{
-		ofSetColor(255);
+		ofSetColor(ofColor::fromHsb(ofGetFrameNum(),255,255));
 		ofCircle(int(ofGetFrameNum())%numLED, 0, 1);
 	}
 	ofDisableBlendMode();
@@ -38,7 +38,7 @@ void testApp::update(){
 	led->renderBuffer.end();
 	
 	led->encode();
-//	#define Debug
+	#define Debug
 	
 #ifdef Debug
 	printf( "\n------------------------------------\n");

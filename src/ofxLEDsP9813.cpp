@@ -19,7 +19,49 @@ ofxLEDsP9813::ofxLEDsP9813(const size_t _numLEDs)
 {
 	if (!EncodedShaderInitialized)
 	{
+#ifdef TARGET_OPENGLES
+		std::stringstream vertexShaderSource;
+		vertexShaderSource
+		<< "attribute vec4 position;\n"
+		<< "attribute vec4 color;\n"
+		<< "attribute vec4 normal;\n"
+		<< "attribute vec2 texcoord;\n"
+		<< "uniform mat4 modelViewMatrix;\n"
+		<< "uniform mat4 projectionMatrix;\n"
+		<< "uniform sampler2D maskTex;\n"
+		<< "varying vec4 colorVarying;\n"
+		<< "varying vec2 texCoordVarying;\n"
+		<< "void main()\n"
+		<< "{\n"
+		<< "//get our current vertex position so we can modify it\n"
+		<< "	vec4 pos = projectionMatrix * modelViewMatrix * position;\n"
+		<< "	gl_Position = pos;\n"
+		<< "	colorVarying = color;\n"
+		<< "	texCoordVarying = texcoord;\n"
+		<< "}\n";
+		ofLogVerbose("ofxLEDP9813")<< vertexShaderSource.str();
+		EncodingShader.setupShaderFromSource(GL_VERTEX_SHADER, vertexShaderSource.str());
 		
+		std::stringstream fragmentShaderSource;
+		fragmentShaderSource
+		<< "uniform sampler2D tex0;\n"
+		<< "uniform vec4 color;\n"
+		<< "varying vec2 texCoordVarying;\n"
+		<< "void main (void)\n"
+		<< "{\n"
+		<< "	vec2 pos = texCoordVarying;\n"
+		<< "	vec3 src = texture2D(tex0, pos).rgb;\n"
+		<< "	int flag=0;"
+		<< "	flag =  ( int(src.r*255) &0xc0)>>6;"
+		<< "	flag |= ( int(src.g*255) &0xc0)>>4;"
+		<< "	flag |= ( int(src.b*255) &0xc0)>>2;"
+		<< "	flag = 255-flag;"
+		<< "	gl_FragColor = vec4(flag/255.0,src.r,src.g,src.b);\n"
+		<< "}\n";
+		ofLogVerbose("ofxLEDP9813")<< fragmentShaderSource.str();
+		EncodingShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragmentShaderSource.str());
+
+#else
 		std::stringstream vertexShaderSource;
 		vertexShaderSource
 		<< "varying vec2 TexCoord;"
@@ -41,14 +83,22 @@ ofxLEDsP9813::ofxLEDsP9813(const size_t _numLEDs)
 		<< "void main(void)\n"
 		<< "{"
 		<< "  vec4 originalColor    = texture2DRect(tex0, TexCoord);\n"
-		<< "  vec4 Color     = vec4(originalColor.rgb,1);\n"
-		<< "  gl_FragColor          = Color;\n"
+		<< "	int flag=0;"
+		<< "	flag =  ( int( originalColor.r*255) &0xc0)>>6;"
+		<< "	flag |= ( int( originalColor.g*255) &0xc0)>>4;"
+		<< "	flag |= ( int( originalColor.b*255) &0xc0)>>2;"
+		<< "	flag = 255-flag;"
+		<< "	gl_FragColor = vec4(flag/255.0,originalColor.r,originalColor.g,originalColor.b);\n"
+//		<< "  vec4 Color     = vec4(originalColor.rgb,1);\n"
+//		<< "  gl_FragColor          = Color;\n"
 		<< "}\n"
 		;
 		EncodingShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragmentShaderSource.str());
 		
 		EncodingShader.linkProgram();
 		EncodedShaderInitialized = true;
+
+#endif
 	}
 	
 	resize(_numLEDs);
@@ -170,25 +220,25 @@ ofxLEDsP9813::encode()
 		glGetTexImage(dataTexture.getTextureData().textureTarget, 0,
 					  GL_RGBA, GL_UNSIGNED_BYTE,
 					  &txBuffer[PixelsStart]);
-		for(int i = 0 ; i < numLEDs ; i++)
-		{
-			int index = i*4+PixelsStart;
-			uint8 r = txBuffer[index];
-			uint8 g = txBuffer[index+1];
-			uint8 b = txBuffer[index+2];
-			txBuffer[index] = makeFlag (r,g,b);
-			txBuffer[index+1] = r;
-			txBuffer[index+2] = g;
-			txBuffer[index+3] = b;
-			//			printf("index : %i - %u\n",index, txBuffer[index]);
-		}
+//		for(int i = 0 ; i < numLEDs ; i++)
+//		{
+//			int index = i*4+PixelsStart;
+//			uint8 r = txBuffer[index];
+//			uint8 g = txBuffer[index+1];
+//			uint8 b = txBuffer[index+2];
+//			txBuffer[index] = makeFlag (r,g,b);
+//			txBuffer[index+1] = r;
+//			txBuffer[index+2] = g;
+//			txBuffer[index+3] = b;
+//			//			printf("index : %i - %u\n",index, txBuffer[index]);
+//		}
 		dataTexture.unbind();
 #else
 		//		int format,type;
 		//		ofGetGlFormatAndType(encodedBuffer.internalformat,encodedBuffer.format,encodedBuffer.type);
 		//		glReadPixels(0,0,encodedBuffer.width, encodedBuffer.height, encodedBuffer.format, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
 		encodedBuffer.bind();
-        glReadPixels(0,0,encodedBuffer.getWidth(), encodedBuffer.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
+        glReadPixels(0,0,encodedBuffer.getWidth(), encodedBuffer.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
         encodedBuffer.unbind();
 #endif
 	}
@@ -196,14 +246,14 @@ ofxLEDsP9813::encode()
 	
 	needsEncoding = false;
 }
-uint8_t ofxLEDsP9813::makeFlag (uint8_t red, uint8_t green, uint8_t blue)
-{
-	uint8_t flag=0;
-	
-	flag =  (red&0xc0)>>6;
-	flag |= (green&0xc0)>>4;
-	flag |= (blue&0xc0)>>2;
-	
-	return ~flag;
-	
-}
+//uint8_t ofxLEDsP9813::makeFlag (uint8_t red, uint8_t green, uint8_t blue)
+//{
+//	uint8_t flag=0;
+//	
+//	flag =  (red&0xc0)>>6;
+//	flag |= (green&0xc0)>>4;
+//	flag |= (blue&0xc0)>>2;
+//	
+//	return ~flag;
+//	
+//}
