@@ -1,6 +1,6 @@
 #include "testApp.h"
-int row = 16;
-int col = 16;
+int row = 1;
+int col = 5;
 int numLED = col*row;
 float ptSize = 5;
 //--------------------------------------------------------------

@@ -42,7 +42,7 @@ ofxLEDsP9813::ofxLEDsP9813(const size_t _numLEDs)
 		<< "{"
 		<< "  vec4 originalColor    = texture2DRect(tex0, TexCoord);\n"
 		<< "  vec4 Color     = vec4(originalColor.rgb,1);\n"
-		<< "  gl_FragColor          = Color.argb;\n"
+		<< "  gl_FragColor          = Color;\n"
 		<< "}\n"
 		;
 		EncodingShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragmentShaderSource.str());
@@ -87,7 +87,7 @@ ofxLEDsP9813::resize(size_t _numLEDs)
 #ifdef TARGET_OPENGLES
 	fboConfig.textureTarget = GL_TEXTURE_2D;
 #else
-	fboConfig.textureTarget = GL_TEXTURE_RECTANGLE_ARB;
+	fboConfig.textureTarget = GL_TEXTURE_RECTANGLE_ARB; 
 #endif
 	fboConfig.width         = stripRect.width;
 	fboConfig.height        = stripRect.height;
@@ -173,20 +173,19 @@ ofxLEDsP9813::encode()
 		for(int i = 0 ; i < numLEDs ; i++)
 		{
 			int index = i*4+PixelsStart;
-			uint8 r = txBuffer[index+1];
-			uint8 g = txBuffer[index+2];
-			uint8 b = txBuffer[index+3];
+			uint8 r = txBuffer[index];
+			uint8 g = txBuffer[index+1];
+			uint8 b = txBuffer[index+2];
 			txBuffer[index] = makeFlag (r,g,b);
-
+			txBuffer[index+1] = r;
+			txBuffer[index+2] = g;
+			txBuffer[index+3] = b;
 //			printf("index : %i - %u\n",index, txBuffer[index]);
 		}
 #else
-		glReadPixels(0,
-					 0,
-					 stripRect.width,
-					 stripRect.height,
-					 GL_RGB, GL_UNSIGNED_BYTE,
-					 &txBuffer[PixelsStart]);
+		int format,type;
+		ofGetGlFormatAndType(encodedBuffer.internalformat,encodedBuffer.format,encodedBuffer.type);
+		glReadPixels(0,0,encodedBuffer.width, encodedBuffer.height, encodedBuffer.format, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
 
 #endif
 	}

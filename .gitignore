@@ -1,3 +1,4 @@
 src/ofxLEDsPhillipsKinet.h
 src/ofxLEDsPhillipsKinet.cpp
 *.app
+*.xcuserstate
