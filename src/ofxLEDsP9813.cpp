@@ -19,7 +19,7 @@ ofxLEDsP9813::ofxLEDsP9813(const size_t _numLEDs)
 {
 	if (!EncodedShaderInitialized)
 	{
-
+		
 		std::stringstream vertexShaderSource;
 		vertexShaderSource
 		<< "varying vec2 TexCoord;"
@@ -46,7 +46,7 @@ ofxLEDsP9813::ofxLEDsP9813(const size_t _numLEDs)
 		<< "}\n"
 		;
 		EncodingShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragmentShaderSource.str());
-
+		
 		EncodingShader.linkProgram();
 		EncodedShaderInitialized = true;
 	}
@@ -87,7 +87,7 @@ ofxLEDsP9813::resize(size_t _numLEDs)
 #ifdef TARGET_OPENGLES
 	fboConfig.textureTarget = GL_TEXTURE_2D;
 #else
-	fboConfig.textureTarget = GL_TEXTURE_RECTANGLE_ARB; 
+	fboConfig.textureTarget = GL_TEXTURE_RECTANGLE_ARB;
 #endif
 	fboConfig.width         = stripRect.width;
 	fboConfig.height        = stripRect.height;
@@ -114,7 +114,7 @@ void
 ofxLEDsP9813::setPixels(std::vector<ofColor>colors)
 {
 	
-//	ofxLEDsImplementation::clear(ofColor::black);
+	//	ofxLEDsImplementation::clear(ofColor::black);
 	
 	for (size_t i=0; i<numLEDs; ++i)
 	{
@@ -131,7 +131,7 @@ ofxLEDsP9813::setPixels(std::vector<ofColor>colors)
 void
 ofxLEDsP9813::setPixels(unsigned char*colors ,int _size)
 {
-//	ofxLEDsImplementation::clear(ofColor::black);
+	//	ofxLEDsImplementation::clear(ofColor::black);
 	
 	for (size_t i=0; i<numLEDs; ++i)
 	{
@@ -149,7 +149,7 @@ ofxLEDsP9813::setPixels(unsigned char*colors ,int _size)
 void
 ofxLEDsP9813::encode()
 {
-//	ofMutex::ScopedLock lock(txBufferMutex);
+	//	ofMutex::ScopedLock lock(txBufferMutex);
 	
 	encodedBuffer.begin();
 	{
@@ -161,10 +161,10 @@ ofxLEDsP9813::encode()
 	}
 	encodedBuffer.end();
 	
-	ofTexture& dataTexture(encodedBuffer.getTextureReference());
-	dataTexture.bind();
 	{
 #ifndef TARGET_OPENGLES
+		ofTexture& dataTexture(encodedBuffer.getTextureReference());
+		dataTexture.bind();
 		
 		// These pixels are swizzled into a 2nd array for FTDI Write
 		glGetTexImage(dataTexture.getTextureData().textureTarget, 0,
@@ -180,16 +180,19 @@ ofxLEDsP9813::encode()
 			txBuffer[index+1] = r;
 			txBuffer[index+2] = g;
 			txBuffer[index+3] = b;
-//			printf("index : %i - %u\n",index, txBuffer[index]);
+			//			printf("index : %i - %u\n",index, txBuffer[index]);
 		}
+		dataTexture.unbind();
 #else
-		int format,type;
-		ofGetGlFormatAndType(encodedBuffer.internalformat,encodedBuffer.format,encodedBuffer.type);
-		glReadPixels(0,0,encodedBuffer.width, encodedBuffer.height, encodedBuffer.format, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
-
+		//		int format,type;
+		//		ofGetGlFormatAndType(encodedBuffer.internalformat,encodedBuffer.format,encodedBuffer.type);
+		//		glReadPixels(0,0,encodedBuffer.width, encodedBuffer.height, encodedBuffer.format, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
+		encodedBuffer.bind();
+        glReadPixels(0,0,encodedBuffer.getWidth(), encodedBuffer.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
+        encodedBuffer.unbind();
 #endif
 	}
-	dataTexture.unbind();
+	
 	
 	needsEncoding = false;
 }
@@ -202,5 +205,5 @@ uint8_t ofxLEDsP9813::makeFlag (uint8_t red, uint8_t green, uint8_t blue)
 	flag |= (blue&0xc0)>>2;
 	
 	return ~flag;
-
+	
 }
