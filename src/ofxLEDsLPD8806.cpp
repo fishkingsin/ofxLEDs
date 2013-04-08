@@ -51,8 +51,8 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs)
 		<< "{\n"
 		<< "	vec2 pos = texCoordVarying;\n"
 		<< "	vec3 src = texture2D(tex0, pos).rgb;\n"
-		<< "	vec3 lpd8806Color = vec3(src.r*0.5 + 0.004,src.g*0.5+0.004,src.b*0.5+0.004);\n"
-		<< "	gl_FragColor = vec4(lpd8806Color.g,lpd8806Color.r,lpd8806Color.b,1.0);\n"
+		<< "	vec3 lpd8806Color = src*0.5 + 0.5+0.004;\n"
+		<< "	gl_FragColor = vec4(lpd8806Color.rgb,1.0);\n"
 		<< "}\n";
 		//		<< "	gl_FragColor = vec4( src , 1.0);\n"
 		ofLogVerbose("ofxLEDsLPD8806")<< fragmentShaderSource.str();
@@ -98,9 +98,9 @@ ofxLEDsLPD8806::~ofxLEDsLPD8806()
 void
 ofxLEDsLPD8806::resize(size_t _numLEDs)
 {
-#ifdef TARGET_OPENGLES
-    pix.allocate(_numLEDs, 1, OF_IMAGE_COLOR);
-#endif
+// #ifdef TARGET_OPENGLES
+//     pix.allocate(_numLEDs, 1, OF_IMAGE_COLOR);
+// #endif
 	numLEDs = _numLEDs;
 	stripRect.set(0, 0, _numLEDs, 1);
 	
@@ -213,11 +213,11 @@ ofxLEDsLPD8806::encode()
         dataTexture.unbind();
 #else
 
-//        encodedBuffer.bind();
-////        int format,type;
-////        ofGetGlFormatAndType(encodedBuffer.settings.internalformat,format,type);
-//        glReadPixels(0,0,encodedBuffer.getWidth(), encodedBuffer.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
-//        encodedBuffer.unbind();
+       encodedBuffer.bind();
+//        int format,type;
+//        ofGetGlFormatAndType(encodedBuffer.settings.internalformat,format,type);
+       glReadPixels(0,0,encodedBuffer.getWidth(), encodedBuffer.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
+       encodedBuffer.unbind();
 
         
         //		glReadPixels(0,
@@ -226,8 +226,8 @@ ofxLEDsLPD8806::encode()
         //					 stripRect.height,
         //					 GL_RGB, GL_UNSIGNED_BYTE,
         //					 &txBuffer[PixelsStart]);
-        encodedBuffer.readToPixels(pix);
-        memcpy(&txBuffer[PixelsStart], pix.getPixels() , numLEDs);
+        // encodedBuffer.readToPixels(pix);
+        // memcpy(&txBuffer[PixelsStart], pix.getPixels() , numLEDs);
         
 #endif
 	}
