@@ -39,4 +39,7 @@ private:
 
   static ofShader lpd8806EncodingShader;
   static bool lpd8806EncodedShaderInitialized;
+#ifdef TARGET_OPENGLES
+    ofPixels pix;
+#endif
 };

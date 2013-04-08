@@ -98,6 +98,9 @@ ofxLEDsLPD8806::~ofxLEDsLPD8806()
 void
 ofxLEDsLPD8806::resize(size_t _numLEDs)
 {
+#ifdef TARGET_OPENGLES
+    pix.allocate(_numLEDs, 1, OF_IMAGE_COLOR);
+#endif
 	numLEDs = _numLEDs;
 	stripRect.set(0, 0, _numLEDs, 1);
 	
@@ -209,11 +212,19 @@ ofxLEDsLPD8806::encode()
 					  &txBuffer[PixelsStart]);
         dataTexture.unbind();
 #else
+<<<<<<< HEAD
 //         encodedBuffer.bind();
 // //        int format,type;
 // //        ofGetGlFormatAndType(encodedBuffer.settings.internalformat,format,type);
 //         glReadPixels(0,0,encodedBuffer.getWidth(), encodedBuffer.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
 //         encodedBuffer.unbind();
+=======
+//        encodedBuffer.bind();
+////        int format,type;
+////        ofGetGlFormatAndType(encodedBuffer.settings.internalformat,format,type);
+//        glReadPixels(0,0,encodedBuffer.getWidth(), encodedBuffer.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
+//        encodedBuffer.unbind();
+>>>>>>> update read pix method
         
         //		glReadPixels(0,
         //					 0,
@@ -221,6 +232,8 @@ ofxLEDsLPD8806::encode()
         //					 stripRect.height,
         //					 GL_RGB, GL_UNSIGNED_BYTE,
         //					 &txBuffer[PixelsStart]);
+        encodedBuffer.readToPixels(pix);
+        memcpy(&txBuffer[PixelsStart], pix.getPixels() , numLEDs);
         
 #endif
 	}
