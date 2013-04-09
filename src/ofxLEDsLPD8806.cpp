@@ -51,7 +51,7 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs)
 		<< "{\n"
 		<< "	vec2 pos = texCoordVarying;\n"
 		<< "	vec3 src = texture2D(tex0, pos).rgb;\n"
-		<< "	vec3 lpd8806Color = src*0.5 + 0.5+0.004;\n"
+		<< "	vec3 lpd8806Color = src*0.5 + 0.5;\n"
 		<< "	gl_FragColor = vec4(lpd8806Color.grb,1.0);\n"
 		<< "}\n";
 		//		<< "	gl_FragColor = vec4( src , 1.0);\n"
