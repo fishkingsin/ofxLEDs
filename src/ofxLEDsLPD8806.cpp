@@ -14,7 +14,7 @@ ofShader ofxLEDsLPD8806::lpd8806EncodingShader;
 bool ofxLEDsLPD8806::lpd8806EncodedShaderInitialized;
 
 //--------------------------------------------------------------
-ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs)
+ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs,int width , int height)
 : ofxLEDsImplementation(_numLEDs)
 {
 	if (!lpd8806EncodedShaderInitialized)
@@ -87,13 +87,49 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs)
 		lpd8806EncodedShaderInitialized = true;
 	}
 	
-	resize(_numLEDs);
+	resize(_numLEDs,width,height);
 }
 
 //--------------------------------------------------------------
 ofxLEDsLPD8806::~ofxLEDsLPD8806()
 {}
-
+//--------------------------------------------------------------
+void ofxLEDsLPD8806::resize(size_t _numLEDs,int width, int height)
+{
+    numLEDs = _numLEDs;
+	stripRect.set(0, 0, width, height);
+	
+	DataStart   = 0;
+	PixelsStart = 4;
+	PixelsEnd   = PixelsStart + (3*numLEDs);
+	LatchStart  = PixelsEnd;
+	DataEnd     = PixelsEnd + 4;
+	
+	size_t latchSize = 4;
+	std::vector<uint8_t> latch(latchSize, 0);
+	
+	txBuffer.resize(DataEnd);
+	
+	// Write latch data before any data, and after all the pixel data
+	memcpy(&txBuffer[DataStart], latch.data(), latchSize);
+	memcpy(&txBuffer[LatchStart], latch.data(), latchSize);
+	
+	// Initialized black/LED-off pixel data
+	memset(&txBuffer[PixelsStart], 0x80, (PixelsEnd-PixelsStart));
+	
+	ofFbo::Settings fboConfig;
+#ifdef TARGET_OPENGLES
+	fboConfig.textureTarget = GL_TEXTURE_2D;
+#else
+	fboConfig.textureTarget = GL_TEXTURE_RECTANGLE_ARB;
+#endif
+	fboConfig.width         = stripRect.width;
+	fboConfig.height        = stripRect.height;
+	fboConfig.minFilter     = GL_NEAREST;
+	fboConfig.maxFilter     = GL_NEAREST;
+	renderBuffer.allocate(fboConfig);
+	encodedBuffer.allocate(fboConfig);
+}
 //--------------------------------------------------------------
 void
 ofxLEDsLPD8806::resize(size_t _numLEDs)

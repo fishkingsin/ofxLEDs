@@ -18,10 +18,11 @@ class ofxLEDsLPD8806
 : public ofxLEDsImplementation
 {
 public:
-  ofxLEDsLPD8806(const size_t _numLEDs);
+  ofxLEDsLPD8806(const size_t _numLEDs ,int width=0, int height=0);
   virtual ~ofxLEDsLPD8806();
 
   void resize(size_t _numLEDs);
+    void resize(size_t _numLEDs,int width=0, int height=0);
   void clear(const ofColor& c);
   void encode();
 	
