@@ -22,7 +22,7 @@ public:
   virtual ~ofxLEDsLPD8806();
 
   void resize(size_t _numLEDs);
-    void resize(size_t _numLEDs,int width=0, int height=0);
+    void resize(size_t _numLEDs,int width, int height);
   void clear(const ofColor& c);
   void encode();
 	
