@@ -86,8 +86,14 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs,int width , int height)
 		lpd8806EncodingShader.linkProgram();
 		lpd8806EncodedShaderInitialized = true;
 	}
-	
-	resize(_numLEDs,width,height);
+	if(width==0 || height==0)
+	{
+		resize(_numLEDs);
+	}
+	else
+	{
+		resize(_numLEDs,width,height);
+	}
 }
 
 //--------------------------------------------------------------
