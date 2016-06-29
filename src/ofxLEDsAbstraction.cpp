@@ -24,15 +24,7 @@ ofxLEDsAbstraction::resize(const ofRectangle& _rect)
 {
   rect = _rect;
   ofFbo::Settings fboConfig;
-<<<<<<< HEAD
-#ifdef TARGET_OPENGLES
-	fboConfig.textureTarget = GL_TEXTURE_2D;
-#else
-  fboConfig.textureTarget = GL_TEXTURE_RECTANGLE_ARB;
-#endif
-=======
   fboConfig.textureTarget = GL_TEXTURE_2D;
->>>>>>> paulreimer/master
   fboConfig.width         = rect.width;
   fboConfig.height        = rect.height;
   fboConfig.minFilter     = GL_NEAREST;

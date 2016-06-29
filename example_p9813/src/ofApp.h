@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxLEDsP9813.h"
-class testApp : public ofBaseApp{
+class ofApp : public ofBaseApp{
 
 	public:
 		void setup();

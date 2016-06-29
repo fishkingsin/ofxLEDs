@@ -153,7 +153,8 @@ ofxLEDsP9813::clear(const ofColor& c)
 {
 	ofxLEDsImplementation::clear(c);
 	
-	uint8_t pixel[3] = { (c.g>>1) | 0x80, (c.r>>1) | 0x80, (c.b>>1) | 0x80 };
+	uint8_t pixel[3] = { static_cast<uint8_t>((c.g>>1) | 0x80)
+        , static_cast<uint8_t>((c.r>>1) | 0x80), static_cast<uint8_t>((c.b>>1) | 0x80) };
 	for (size_t i=0; i<numLEDs; ++i)
 		memcpy(&txBuffer[PixelsStart + (3*i)], pixel, 3);
 	
@@ -170,7 +171,7 @@ ofxLEDsP9813::setPixels(std::vector<ofColor>colors)
 	{
 		if(i<colors.size())
 		{
-			uint8_t pixel[3] = { (colors[i].g>>1) | 0x80, (colors[i].r>>1) | 0x80, (colors[i].b>>1) | 0x80 };
+			uint8_t pixel[3] = { static_cast<uint8_t>((colors[i].g>>1) | 0x80), static_cast<uint8_t>((colors[i].r>>1) | 0x80), static_cast<uint8_t>((colors[i].b>>1) | 0x80) };
 			memcpy(&txBuffer[PixelsStart + (3*i)], pixel, 3);
 		}
 	}
@@ -187,7 +188,7 @@ ofxLEDsP9813::setPixels(unsigned char*colors ,int _size)
 	{
 		if(i<_size)
 		{
-			uint8_t pixel[3] = { (colors[i*3+1]>>1) | 0x80,  (colors[i*3]>>1)| 0x80, (colors[i*3+2]>>1) | 0x80 };
+			uint8_t pixel[3] = { static_cast<uint8_t>((colors[i*3+1]>>1) | 0x80),  static_cast<uint8_t>((colors[i*3]>>1)| 0x80), static_cast<uint8_t>((colors[i*3+2]>>1) | 0x80) };
 			memcpy(&txBuffer[PixelsStart + (3*i)], pixel, 3);
 		}
 	}
