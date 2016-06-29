@@ -17,6 +17,7 @@ bool ofxLEDsLPD8806::lpd8806EncodedShaderInitialized;
 ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs,int width , int height)
 : ofxLEDsImplementation(_numLEDs)
 {
+<<<<<<< HEAD
 	if (!lpd8806EncodedShaderInitialized)
 	{
 #ifdef TARGET_OPENGLES
@@ -88,11 +89,80 @@ ofxLEDsLPD8806::ofxLEDsLPD8806(const size_t _numLEDs,int width , int height)
 	}
 	
 	resize(_numLEDs,width,height);
+=======
+  if (!lpd8806EncodedShaderInitialized)
+  {
+    std::stringstream vertexShaderSource;
+    if (ofIsGLProgrammableRenderer())
+    {
+      vertexShaderSource
+      << "attribute vec4 position;"
+      << "attribute vec2 texcoord;"
+      << "uniform mat4 modelViewProjectionMatrix;"
+      << "varying vec2 texCoordVarying;"
+      << "void main()"
+      << "{"
+      << "  texCoordVarying = texcoord;"
+      << "  gl_Position = modelViewProjectionMatrix * position;"
+      << "}";
+    }
+    else {
+      vertexShaderSource
+      << "varying vec2 TexCoord;"
+      << "void main(void)"
+      << "{"
+      << "  TexCoord = gl_MultiTexCoord0.st;"
+      << "  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;"
+      << "}";
+    }
+    lpd8806EncodingShader.setupShaderFromSource(GL_VERTEX_SHADER, vertexShaderSource.str());
+
+    std::stringstream fragmentShaderSource;
+    if (ofIsGLProgrammableRenderer())
+    {
+      fragmentShaderSource
+      << "precision highp float;"
+      << "uniform sampler2D tex0;"
+      << "varying vec2 texCoordVarying;"
+      << "void main()"
+      << "{"
+      << "  vec4 originalColor    = texture2D(tex0, texCoordVarying);"
+      // When cast as char, this is 0x80 | (c>>1)
+      << "  vec4 lpd8806Color     = originalColor*0.498 + 0.502;"
+      << "  gl_FragColor          = lpd8806Color.brga;"
+      << "}";
+    }
+    else {
+      fragmentShaderSource
+      << "#version 120\n"
+      << "varying vec2 TexCoord;"
+      << "uniform sampler2D tex0;"
+      << "void main(void)"
+      << "{"
+      << "  vec4 originalColor    = texture2D(tex0, TexCoord);"
+      // When cast as char, this is 0x80 | (c>>1)
+      << "  vec4 lpd8806Color     = originalColor*0.498 + 0.502;"
+      << "  gl_FragColor          = lpd8806Color.brga;"
+      << "}";
+    }
+
+    lpd8806EncodingShader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragmentShaderSource.str());
+
+    if(ofIsGLProgrammableRenderer())
+      lpd8806EncodingShader.bindDefaults();
+
+    lpd8806EncodingShader.linkProgram();
+    lpd8806EncodedShaderInitialized = true;
+  }
+  
+  resize(_numLEDs);
+>>>>>>> paulreimer/master
 }
 
 //--------------------------------------------------------------
 ofxLEDsLPD8806::~ofxLEDsLPD8806()
 {}
+<<<<<<< HEAD
 //--------------------------------------------------------------
 void ofxLEDsLPD8806::resize(size_t _numLEDs,int width, int height)
 {
@@ -130,10 +200,15 @@ void ofxLEDsLPD8806::resize(size_t _numLEDs,int width, int height)
 	renderBuffer.allocate(fboConfig);
 	encodedBuffer.allocate(fboConfig);
 }
+=======
+
+#ifdef TARGET_OPENGLES
+>>>>>>> paulreimer/master
 //--------------------------------------------------------------
 void
 ofxLEDsLPD8806::resize(size_t _numLEDs)
 {
+<<<<<<< HEAD
 // #ifdef TARGET_OPENGLES
 //     pix.allocate(_numLEDs, 1, OF_IMAGE_COLOR);
 // #endif
@@ -218,12 +293,18 @@ ofxLEDsLPD8806::setPixels(unsigned char*colors ,int _size)
 	}
 	
 	needsEncoding = false;
+=======
+  ofxLEDsImplementation::resize(_numLEDs);
+  pixelDataBufferRGBA.resize(numLEDs*4);
+>>>>>>> paulreimer/master
 }
+#endif
 
 //--------------------------------------------------------------
 void
 ofxLEDsLPD8806::encode()
 {
+<<<<<<< HEAD
 	ofMutex::ScopedLock lock(txBufferMutex);
 	
 	encodedBuffer.begin();
@@ -254,6 +335,51 @@ ofxLEDsLPD8806::encode()
 //        ofGetGlFormatAndType(encodedBuffer.settings.internalformat,format,type);
        glReadPixels(0,0,encodedBuffer.getWidth(), encodedBuffer.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, &txBuffer[PixelsStart]);
        encodedBuffer.unbind();
+=======
+//  ofMutex::ScopedLock lock(txBufferMutex);
+  encodedBuffer.begin();
+  {
+    lpd8806EncodingShader.begin();
+    {
+      renderBuffer.getTextureReference().draw(stripRect);
+    }
+    lpd8806EncodingShader.end();
+  }
+  encodedBuffer.end();
+
+#ifndef TARGET_OPENGLES  
+  ofTexture& dataTexture(encodedBuffer.getTextureReference());
+  dataTexture.bind();
+  {
+    // These pixels are swizzled into a 2nd array for FTDI Write
+    glGetTexImage(dataTexture.getTextureData().textureTarget, 0,
+                  GL_RGB, GL_UNSIGNED_BYTE,
+                  &pixelDataBuffer[0]);
+  }
+  dataTexture.unbind();
+#else
+  encodedBuffer.bind();
+  {
+    glReadPixels(0, 0,
+                 stripRect.width, stripRect.height,
+                 GL_RGBA, GL_UNSIGNED_BYTE,
+                 &pixelDataBufferRGBA[0]);
+  }
+  encodedBuffer.unbind();
+
+  size_t w=stripRect.width;
+  size_t h=stripRect.height;
+  for (size_t y=0; y<h; ++y)
+  {
+    for (size_t x=0; x<w; ++x)
+    {
+      pixelDataBuffer[3*((y*w)+(x))+0] = pixelDataBufferRGBA[4*((y*w)+(x))+0];
+      pixelDataBuffer[3*((y*w)+(x))+1] = pixelDataBufferRGBA[4*((y*w)+(x))+1];
+      pixelDataBuffer[3*((y*w)+(x))+2] = pixelDataBufferRGBA[4*((y*w)+(x))+2];
+    }
+  }
+#endif
+>>>>>>> paulreimer/master
 
         
         //		glReadPixels(0,

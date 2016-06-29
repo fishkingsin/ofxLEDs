@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 src/ofxLEDsPhillipsKinet.h
 src/ofxLEDsPhillipsKinet.cpp
 *.app
@@ -6,3 +7,5 @@ src/ofxLEDsPhillipsKinet.cpp
 *.xcuserstate
 
 *.xcuserstate
+=======
+>>>>>>> paulreimer/master

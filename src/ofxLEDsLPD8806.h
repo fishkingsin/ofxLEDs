@@ -11,6 +11,7 @@
 #pragma once
 
 #include "ofxLEDsImplementation.h"
+#include "ofxLEDsLPD8806Frame.h"
 
 #include "ofShader.h"
 
@@ -18,6 +19,7 @@ class ofxLEDsLPD8806
 : public ofxLEDsImplementation
 {
 public:
+<<<<<<< HEAD
   ofxLEDsLPD8806(const size_t _numLEDs ,int width=0, int height=0);
   virtual ~ofxLEDsLPD8806();
 
@@ -30,17 +32,26 @@ public:
 	void setPixels(unsigned char*colors ,int _size);
   ofMutex txBufferMutex;
   std::vector<uint8_t> txBuffer;
+=======
+  ofxLEDsLPD8806(const size_t _numLEDs=0);
+  virtual ~ofxLEDsLPD8806();
+
+  void encode();
+#ifdef TARGET_OPENGLES
+  void resize(size_t _numLEDs);
+#endif
+>>>>>>> paulreimer/master
 
 private:
-  size_t DataStart;
-  size_t PixelsStart;
-  size_t PixelsEnd;
-  size_t LatchStart;
-  size_t DataEnd;
-
   static ofShader lpd8806EncodingShader;
   static bool lpd8806EncodedShaderInitialized;
+<<<<<<< HEAD
 // #ifdef TARGET_OPENGLES
 //     ofPixels pix;
 // #endif
+=======
+#ifdef TARGET_OPENGLES
+  std::vector<uint8_t> pixelDataBufferRGBA;
+#endif
+>>>>>>> paulreimer/master
 };
